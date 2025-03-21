@@ -5,6 +5,7 @@ import task_4
 import task_5
 import task_6
 import task_7
+import task_8
 
 
 if __name__ == "__main__":
@@ -30,3 +31,7 @@ if __name__ == "__main__":
 
     print(task_7.sum_from_a_list([1, 2, 3]))
     task_7.list_of_words_to_uppercase(["hello", "world", "this", "is", "a", "list"])
+
+    task_8.count_to_ten()
+    task_8.count_to_ten_even()
+    task_8.print_multiplication_table(5)
