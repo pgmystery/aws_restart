@@ -4,6 +4,7 @@ import task_3
 import task_4
 import task_5
 import task_6
+import task_7
 
 
 if __name__ == "__main__":
@@ -26,3 +27,6 @@ if __name__ == "__main__":
 
     print(task_6.get_current_date_and_time())
     print(task_6.get_days_till_birth())
+
+    print(task_7.sum_from_a_list([1, 2, 3]))
+    task_7.list_of_words_to_uppercase(["hello", "world", "this", "is", "a", "list"])
