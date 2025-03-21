@@ -9,6 +9,8 @@ import task_6
 if __name__ == "__main__":
     print(task_1.add(1, 2))
     print(task_1.sub(2, 1))
+    print(task_1.multipy(2, 1))
+    print(task_1.divide(2, 1))
 
     print(task_2.greetings())
     print(task_2.add_from_input())
