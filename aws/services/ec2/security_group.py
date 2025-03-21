@@ -49,4 +49,4 @@ def ls(ctx: typer.Context):
             sg["Description"],
         )
 
-    print(response)
+    print(table)
