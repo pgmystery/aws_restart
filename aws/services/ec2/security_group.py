@@ -21,8 +21,32 @@ def create(ctx: typer.Context):
         TagSpecifications=[
             {
                 'ResourceType': "security-group",
+                "Tags": [
+                    {"Key": "Name", "Value": name},
+                ],
             },
         ],
+    )
+
+    print(response)
+
+
+@sg_router.command()
+def add_rule(ctx: typer.Context):
+    ec2 = ctx.obj["client"]
+
+    sg_id = typer.prompt("Enter the Security Group Id")
+    protocol = typer.prompt("Enter the Protocol (tcp/udp)", default="tcp")
+    cidr = typer.prompt("Enter the Cidr Range")
+    from_port = typer.prompt("Enter the From Port")
+    to_port = typer.prompt("Enter the To Port")
+
+    response = ec2.authorize_security_group_ingress(
+        GroupId=sg_id,
+        IpProtocol=protocol,
+        CidrIp=cidr,
+        FromPort=from_port,
+        ToPort=to_port
     )
 
     print(response)
