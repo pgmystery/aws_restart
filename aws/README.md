@@ -1,4 +1,15 @@
-# AWS Boto3
+# AWS CLI (kinda ^^)
+
+## Install requirements for python
+
+To install all requirements you need for this application, install the packages from the "requirements.txt"-file.
+
+```shell
+pip install -r requirements.txt
+```
+
+
+## AWS Boto3
 
 To run the python scripts, you need the following configured ".env"-file:
 
