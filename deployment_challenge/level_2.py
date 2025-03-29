@@ -27,9 +27,7 @@ sudo systemctl enable mariadb
 
 # Set basic permissions for /var/www directory
 sudo chown -R apache:apache /var/www
-sudo chmod 2775 /var/www
-sudo find /var/www -type d -exec chmod 2775 {} \;
-sudo find /var/www -type f -exec chmod 0664 {} \;
+sudo chmod -R 0770 /var/www
 """
 
 
