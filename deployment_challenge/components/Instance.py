@@ -44,3 +44,24 @@ class Instance(EC2):
             UserData=user_data,
         )["Instances"][0]
         self.id = self.info["InstanceId"]
+
+    @property
+    def private_ip(self):
+        self.info = self.get_info()
+
+        if "PrivateIpAddress" not in self.info:
+            return None
+
+        return self.info["PrivateIpAddress"]
+
+    @property
+    def public_ip(self):
+        self.info = self.get_info()
+
+        if "PublicIpAddress" not in self.info:
+            return None
+
+        return self.info["PublicIpAddress"]
+
+    def get_info(self):
+        return self.client.describe_instances(InstanceIds=[self.id])['Reservations'][0]['Instances'][0]
