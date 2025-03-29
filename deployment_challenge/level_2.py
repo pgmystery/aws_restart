@@ -73,8 +73,8 @@ def main():
         print("CREATE PUBLIC ROUTE-TABLE...")
         route_table_public = vpc.create_route_table(
             name="level_2_route_table_public",
+            associate_subnet=public_subnet.id
         )
-        route_table_public.associate_subnet(subnet_id=public_subnet.id)
         route_table_public.add_route_internet_gateway(
             destination_cidr="0.0.0.0/0",
             internet_gateway_id=internet_gateway.id,
@@ -83,8 +83,8 @@ def main():
         print("CREATE PRIVATE ROUTE-TABLE...")
         route_table_private = vpc.create_route_table(
             name="level_2_route_table_private",
+            associate_subnet=private_subnet.id
         )
-        route_table_private.associate_subnet(subnet_id=private_subnet.id)
         route_table_private.add_route_nat_gateway(
             destination_cidr="0.0.0.0/0",
             nat_gateway_id=nat.id,

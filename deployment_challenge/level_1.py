@@ -50,8 +50,8 @@ def main():
         print("CREATE ROUTE-TABLE...")
         route_table = vpc.create_route_table(
             name="public_route_table_1",
+            associate_subnet=subnet.id,
         )
-        route_table.associate_subnet(subnet_id=subnet.id)
         route_table.add_route_internet_gateway(
             destination_cidr="0.0.0.0/0",
             internet_gateway_id=internet_gateway.id,

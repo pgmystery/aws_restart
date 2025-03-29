@@ -60,9 +60,12 @@ class VPC(EC2):
 
         return internet_gateway
 
-    def create_route_table(self, name: str, **kwargs) -> RouteTable:
+    def create_route_table(self, name: str, associate_subnet: str = None, **kwargs) -> RouteTable:
         route_table = RouteTable(name, self.id, **kwargs)
         self.route_tables.append(route_table)
+
+        if associate_subnet is not None:
+            route_table.associate_subnet(associate_subnet)
 
         return route_table
 
