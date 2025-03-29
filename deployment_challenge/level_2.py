@@ -127,7 +127,6 @@ def main():
             to_port=22,
             sg_id=bastion_security_group.id,
         )
-        # TODO:
         lam_security_group.add_inbound_rule_cidr(
             protocol="tcp",
             from_port=80,
