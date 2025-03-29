@@ -49,11 +49,11 @@ def main():
     print("CREATE ROUTE-TABLE...")
     route_table = vpc.create_route_table(
         name="public_route_table_1",
-        associate_subnet=subnet.id,
+        associate_subnet=subnet,
     )
     route_table.add_route_internet_gateway(
         destination_cidr="0.0.0.0/0",
-        internet_gateway_id=internet_gateway.id,
+        internet_gateway=internet_gateway,
     )
 
     print("CREATE SECURITY-GROUP...")
@@ -85,8 +85,8 @@ def main():
         availability_zone="us-west-2a",
         instance_type="t2.micro",
         key_pair="vockey",
-        subnet_id=subnet.id,
-        security_groups=[security_group_http.id, security_group_ssh.id],
+        subnet=subnet,
+        security_groups=[security_group_http, security_group_ssh],
         associate_public_ip_address=True,
         user_data=user_data_script
     )

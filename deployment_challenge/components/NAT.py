@@ -1,3 +1,5 @@
+from typing import Any
+
 from .AWS import EC2
 
 
@@ -5,7 +7,7 @@ class NAT(EC2):
     def __init__(self, name: str, subnet_id: str, allocation_id: str, wait_till_ready: bool=True):
         super().__init__()
 
-        self.info = self.client.create_nat_gateway(
+        self.info: dict[str, Any] = self.client.create_nat_gateway(
             AllocationId=allocation_id,
             SubnetId=subnet_id,
             TagSpecifications=[
@@ -21,7 +23,7 @@ class NAT(EC2):
             ],
             ConnectivityType='public',
         )["NatGateway"]
-        self.id = self.info["NatGatewayId"]
+        self.id: str = self.info["NatGatewayId"]
 
         if wait_till_ready:
             self.wait_till_ready()

@@ -72,21 +72,21 @@ def main():
     print("CREATE PUBLIC ROUTE-TABLE...")
     route_table_public = vpc.create_route_table(
         name="level_2_route_table_public",
-        associate_subnet=public_subnet.id
+        associate_subnet=public_subnet
     )
     route_table_public.add_route_internet_gateway(
         destination_cidr="0.0.0.0/0",
-        internet_gateway_id=internet_gateway.id,
+        internet_gateway=internet_gateway,
     )
 
     print("CREATE PRIVATE ROUTE-TABLE...")
     route_table_private = vpc.create_route_table(
         name="level_2_route_table_private",
-        associate_subnet=private_subnet.id
+        associate_subnet=private_subnet
     )
     route_table_private.add_route_nat_gateway(
         destination_cidr="0.0.0.0/0",
-        nat_gateway_id=nat.id,
+        nat_gateway=nat,
     )
 
     print("CREATE SECURITY-GROUP BASTION-SERVER...")
@@ -107,8 +107,8 @@ def main():
         image_id="ami-0f9d441b5d66d5f31",
         instance_type="t2.micro",
         key_pair="vockey",
-        subnet_id=public_subnet.id,
-        security_groups=[bastion_security_group.id],
+        subnet=public_subnet,
+        security_groups=[bastion_security_group],
         associate_public_ip_address=True,
         availability_zone="us-west-2a",
     )
@@ -122,13 +122,13 @@ def main():
         protocol="tcp",
         from_port=22,
         to_port=22,
-        sg_id=bastion_security_group.id,
+        security_group=bastion_security_group,
     )
     lam_security_group.add_inbound_rule_sg(
         protocol="tcp",
         from_port=80,
         to_port=80,
-        sg_id=bastion_security_group.id,
+        security_group=bastion_security_group,
     )
 
     print("CREATE LAM EC2-INSTANCE...")
@@ -137,8 +137,8 @@ def main():
         image_id="ami-0f9d441b5d66d5f31",
         instance_type="t2.micro",
         key_pair="vockey",
-        subnet_id=private_subnet.id,
-        security_groups=[lam_security_group.id],
+        subnet=private_subnet,
+        security_groups=[lam_security_group],
         associate_public_ip_address=False,
         user_data=user_data_script,
         availability_zone="us-west-2a",

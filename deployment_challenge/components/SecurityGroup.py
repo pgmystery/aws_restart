@@ -1,3 +1,5 @@
+from typing import Any
+
 from .AWS import EC2
 
 
@@ -6,7 +8,7 @@ class SecurityGroup(EC2):
         super().__init__()
 
         self.rules = []
-        self.info = self.client.create_security_group(
+        self.info: dict[str, Any] = self.client.create_security_group(
             **kwargs,
             GroupName=name,
             Description=description,
@@ -46,14 +48,14 @@ class SecurityGroup(EC2):
         protocol: str,
         from_port: int,
         to_port: int,
-        sg_id: str,
+        security_group: "SecurityGroup",
     ):
         return self.add_inbound_rule(
             protocol=protocol,
             from_port=from_port,
             to_port=to_port,
             UserIdGroupPairs=[{
-                'GroupId': sg_id,
+                'GroupId': security_group.id,
             }],
         )
 

@@ -1,3 +1,5 @@
+from typing import Optional, Union, Any
+
 from .AWS import EC2
 from .InternetGateway import InternetGateway
 from .SecurityGroup import SecurityGroup
@@ -9,15 +11,15 @@ class VPC(EC2):
     def __init__(self, name: str, cidr: str, **kwargs):
         super().__init__()
 
-        self.internet_gateway = None
-        self.subnets = []
-        self.route_tables = []
+        self.internet_gateway: Optional[InternetGateway] = None
+        self.subnets: list[Subnet] = []
+        self.route_tables: list[RouteTable] = []
 
         tags = kwargs["Tags"] if "Tags" in kwargs else []
 
-        self.name = name
-        self.cidr_block = cidr
-        self.info = self.client.create_vpc(
+        self.name: str = name
+        self.cidr_block: str = cidr
+        self.info: dict[str, Any] = self.client.create_vpc(
             InstanceTenancy='default',
             **kwargs,
             CidrBlock=cidr,
@@ -34,7 +36,7 @@ class VPC(EC2):
                 },
             ],
         )["Vpc"]
-        self.id = self.info["VpcId"]
+        self.id: str = self.info["VpcId"]
 
     def delete(self):
         return self.client.delete_vpc(
@@ -47,7 +49,7 @@ class VPC(EC2):
 
         return subnet
 
-    def attach_internet_gateway(self, internet_gateway: InternetGateway | str) -> InternetGateway:
+    def attach_internet_gateway(self, internet_gateway: Union[InternetGateway,  str]) -> InternetGateway:
         if type(internet_gateway) == str:
             internet_gateway = InternetGateway(internet_gateway)
 
@@ -60,12 +62,12 @@ class VPC(EC2):
 
         return internet_gateway
 
-    def create_route_table(self, name: str, associate_subnet: str = None, **kwargs) -> RouteTable:
+    def create_route_table(self, name: str, associate_subnet: Subnet = None, **kwargs) -> RouteTable:
         route_table = RouteTable(name, self.id, **kwargs)
         self.route_tables.append(route_table)
 
         if associate_subnet is not None:
-            route_table.associate_subnet(associate_subnet)
+            route_table.associate_subnet(associate_subnet.id)
 
         return route_table
 

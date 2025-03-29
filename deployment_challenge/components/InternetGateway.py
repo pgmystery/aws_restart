@@ -1,3 +1,5 @@
+from typing import Any
+
 from .AWS import EC2
 
 
@@ -5,8 +7,8 @@ class InternetGateway(EC2):
     def __init__(self, name: str):
         super().__init__()
 
-        self.name = name
-        self.info = self.client.create_internet_gateway(
+        self.name: str = name
+        self.info: dict[str, Any] = self.client.create_internet_gateway(
             TagSpecifications=[
                 {
                     'ResourceType': 'internet-gateway',
@@ -19,5 +21,5 @@ class InternetGateway(EC2):
                 },
             ],
         )["InternetGateway"]
-        self.id = self.info["InternetGatewayId"]
-        self.owner = self.info["OwnerId"]
+        self.id: str = self.info["InternetGatewayId"]
+        self.owner: str = self.info["OwnerId"]

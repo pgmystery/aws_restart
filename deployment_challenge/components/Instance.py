@@ -1,4 +1,10 @@
+from typing import Any, TYPE_CHECKING
+
 from .AWS import EC2
+
+if TYPE_CHECKING:
+    from .Subnet import Subnet
+    from .SecurityGroup import SecurityGroup
 
 
 class Instance(EC2):
@@ -8,15 +14,15 @@ class Instance(EC2):
         image_id: str,
         instance_type: str,
         key_pair: str,
-        subnet_id: str,
-        security_groups: list[str],
+        subnet: Subnet,
+        security_groups: list[SecurityGroup],
         associate_public_ip_address: bool = False,
         user_data: str = "",
         availability_zone: str = None,
     ):
         super().__init__()
 
-        self.info = self.client.run_instances(
+        self.info: dict[str, Any] = self.client.run_instances(
             ImageId=image_id,
             InstanceType=instance_type,
             MinCount=1,
@@ -29,8 +35,8 @@ class Instance(EC2):
                 {
                     "AssociatePublicIpAddress": associate_public_ip_address,
                     "DeviceIndex": 0,
-                    "SubnetId": subnet_id,
-                    "Groups": security_groups,
+                    "SubnetId": subnet.id,
+                    "Groups": [sg.id for sg in security_groups],
                 },
             ],
             TagSpecifications=[
@@ -43,7 +49,7 @@ class Instance(EC2):
             ],
             UserData=user_data,
         )["Instances"][0]
-        self.id = self.info["InstanceId"]
+        self.id: str = self.info["InstanceId"]
 
     @property
     def private_ip(self):
