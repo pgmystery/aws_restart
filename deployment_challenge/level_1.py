@@ -62,21 +62,21 @@ def main():
             name="level_1_sg_http",
             description="Security Group for VPC 1. (HTTP)"
         )
-        security_group_http.add_inbound_rule(
+        security_group_http.add_inbound_rule_cidr(
             protocol="tcp",
-            cidr="0.0.0.0/0",
             from_port=80,
             to_port=80,
+            cidr="0.0.0.0/0",
         )
         security_group_ssh = vpc.create_security_group(
             name="level_1_sg_ssh",
             description="Security Group for VPC 1. (SSH)"
         )
-        security_group_ssh.add_inbound_rule(
+        security_group_ssh.add_inbound_rule_cidr(
             protocol="tcp",
-            cidr=f"{get_public_ip()}/32",
             from_port=22,
             to_port=22,
+            cidr=f"{get_public_ip()}/32",
         )
 
         print("CREATE EC2-INSTANCE...")

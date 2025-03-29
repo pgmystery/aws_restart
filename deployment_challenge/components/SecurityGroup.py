@@ -25,44 +25,55 @@ class SecurityGroup(EC2):
         )
         self.id: str = self.info["GroupId"]
 
-        # TODO: ?
-        # self.association_info = self.client.associate_security_group_vpc(
-        #     GroupId=self.id,
-        #     VpcId=vpc_id,
-        # )
-
-    def add_inbound_rule(
+    def add_inbound_rule_cidr(
         self,
         protocol: str,
-        cidr: str,
         from_port: int,
         to_port: int,
+        cidr: str,
     ):
-        rule = self.client.authorize_security_group_ingress(
-            GroupId=self.id,
-            IpProtocol=protocol,
-            CidrIp=cidr,
-            FromPort=from_port,
-            ToPort=to_port
-        )["SecurityGroupRules"]
-
-        self.rules.append(rule)
-
-        return rule
+        return self.add_inbound_rule(
+            protocol=protocol,
+            from_port=from_port,
+            to_port=to_port,
+            IpRanges=[{
+                'CidrIp': cidr,
+            }],
+        )
 
     def add_inbound_rule_sg(
         self,
         protocol: str,
-        sg_id: str,
         from_port: int,
         to_port: int,
+        sg_id: str,
     ):
+        return self.add_inbound_rule(
+            protocol=protocol,
+            from_port=from_port,
+            to_port=to_port,
+            UserIdGroupPairs=[{
+                'GroupId': sg_id,
+            }],
+        )
+
+    def add_inbound_rule(
+        self,
+        protocol: str,
+        from_port: int,
+        to_port: int,
+        **kwargs,
+    ):
+        ip_permissions = [{
+            'IpProtocol': protocol,
+            'FromPort': from_port,
+            'ToPort': to_port,
+            **kwargs,
+        }]
+
         rule = self.client.authorize_security_group_ingress(
             GroupId=self.id,
-            IpProtocol=protocol,
-            SourceSecurityGroupName=sg_id,
-            FromPort=from_port,
-            ToPort=to_port
+            IpPermissions=ip_permissions,
         )["SecurityGroupRules"]
 
         self.rules.append(rule)
