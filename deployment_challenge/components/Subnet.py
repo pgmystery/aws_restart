@@ -1,13 +1,16 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from .AWS import EC2
+
+if TYPE_CHECKING:
+    from .VPC import VPC
 
 
 class Subnet(EC2):
     def __init__(
         self,
         name: str,
-        vpc_id: str,
+        vpc: "VPC",
         cidr: str,
         availability_zone: str = "",
         **kwargs
@@ -17,11 +20,11 @@ class Subnet(EC2):
         tags = kwargs["Tags"] if "Tags" in kwargs else []
 
         self.name: str = name
-        self.vpcId: str = vpc_id
+        self.vpcId: str = vpc.id
         self.cidr: str = cidr
         self.availability_zone: str = availability_zone
         self.info: dict[str, Any] = self.client.create_subnet(
-            VpcId=vpc_id,
+            VpcId=vpc.id,
             AvailabilityZone=availability_zone,
             CidrBlock=cidr,
             TagSpecifications=[

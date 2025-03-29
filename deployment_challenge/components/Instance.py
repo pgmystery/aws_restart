@@ -14,11 +14,12 @@ class Instance(EC2):
         image_id: str,
         instance_type: str,
         key_pair: str,
-        subnet: Subnet,
-        security_groups: list[SecurityGroup],
+        subnet: "Subnet",
+        security_groups: list["SecurityGroup"],
         associate_public_ip_address: bool = False,
         user_data: str = "",
         availability_zone: str = None,
+        wait_till_running: bool = True,
     ):
         super().__init__()
 
@@ -51,6 +52,10 @@ class Instance(EC2):
         )["Instances"][0]
         self.id: str = self.info["InstanceId"]
 
+        if wait_till_running:
+            self.wait_till_running()
+            self.update_info()
+
     @property
     def private_ip(self):
         self.info = self.get_info()
@@ -71,3 +76,10 @@ class Instance(EC2):
 
     def get_info(self):
         return self.client.describe_instances(InstanceIds=[self.id])['Reservations'][0]['Instances'][0]
+
+    def update_info(self):
+        self.info = self.get_info()
+
+    def wait_till_running(self):
+        waiter = self.client.get_waiter('instance_running')
+        waiter.wait(InstanceIds=[self.id])

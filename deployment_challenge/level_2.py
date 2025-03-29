@@ -65,8 +65,8 @@ def main():
     print("CREATE NAT... (This takes a few minutes)...")
     nat = NAT(
         name="level_2_nat",
-        subnet_id=public_subnet.id,
-        allocation_id=elastic_ip.id,
+        subnet=public_subnet,
+        allocation=elastic_ip,
     )
 
     print("CREATE PUBLIC ROUTE-TABLE...")

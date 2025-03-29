@@ -1,10 +1,13 @@
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from .AWS import EC2
 
+if TYPE_CHECKING:
+    from .VPC import VPC
+
 
 class SecurityGroup(EC2):
-    def __init__(self, name: str, description: str, vpc_id: str, **kwargs) -> None:
+    def __init__(self, name: str, description: str, vpc: "VPC", **kwargs) -> None:
         super().__init__()
 
         self.rules = []
@@ -12,7 +15,7 @@ class SecurityGroup(EC2):
             **kwargs,
             GroupName=name,
             Description=description,
-            VpcId=vpc_id,
+            VpcId=vpc.id,
             TagSpecifications=[
                 {
                     'ResourceType': 'security-group',

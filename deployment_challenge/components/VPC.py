@@ -44,7 +44,7 @@ class VPC(EC2):
         )
 
     def create_subnet(self, name: str, cidr: str, availability_zone: str = "", **kwargs) -> Subnet:
-        subnet = Subnet(name, self.id, cidr, availability_zone, **kwargs)
+        subnet = Subnet(name, self, cidr, availability_zone, **kwargs)
         self.subnets.append(subnet)
 
         return subnet
@@ -63,13 +63,13 @@ class VPC(EC2):
         return internet_gateway
 
     def create_route_table(self, name: str, associate_subnet: Subnet = None, **kwargs) -> RouteTable:
-        route_table = RouteTable(name, self.id, **kwargs)
+        route_table = RouteTable(name, self, **kwargs)
         self.route_tables.append(route_table)
 
         if associate_subnet is not None:
-            route_table.associate_subnet(associate_subnet.id)
+            route_table.associate_subnet(associate_subnet)
 
         return route_table
 
     def create_security_group(self, name: str, description: str, **kwargs) -> SecurityGroup:
-        return SecurityGroup(name, description, self.id, **kwargs)
+        return SecurityGroup(name, description, self, **kwargs)

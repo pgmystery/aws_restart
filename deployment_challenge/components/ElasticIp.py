@@ -19,5 +19,5 @@ class ElasticIp(EC2):
                 },
             ],
         )
-        self.id = self.info["AllocationId"]
-        self.ip = self.info["PublicIp"]
+        self.id: str = self.info["AllocationId"]
+        self.ip: str = self.info["PublicIp"]

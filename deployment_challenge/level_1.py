@@ -1,6 +1,8 @@
+import json
+
 from components.VPC import VPC
 from components.Instance import Instance
-from utils import get_public_ip
+from utils import get_public_ip, datetime_converter
 
 
 user_data_script = """#!/bin/bash
@@ -36,7 +38,7 @@ def main():
 
     print("CREATE SUBNET...")
     subnet = vpc.create_subnet(
-        name="Public Subnet 1",
+        name="level_1_subnet_public",
         cidr="10.0.0.0/28",
         availability_zone="us-west-2a",
     )
@@ -48,7 +50,7 @@ def main():
 
     print("CREATE ROUTE-TABLE...")
     route_table = vpc.create_route_table(
-        name="public_route_table_1",
+        name="level_1_route_table_public",
         associate_subnet=subnet,
     )
     route_table.add_route_internet_gateway(
@@ -59,7 +61,7 @@ def main():
     print("CREATE SECURITY-GROUP...")
     security_group_http = vpc.create_security_group(
         name="level_1_sg_http",
-        description="Security Group for VPC 1. (HTTP)"
+        description="Security Group for Level 1 VPC. (HTTP)"
     )
     security_group_http.add_inbound_rule_cidr(
         protocol="tcp",
@@ -69,7 +71,7 @@ def main():
     )
     security_group_ssh = vpc.create_security_group(
         name="level_1_sg_ssh",
-        description="Security Group for VPC 1. (SSH)"
+        description="Security Group for Level 1 VPC. (SSH)"
     )
     security_group_ssh.add_inbound_rule_cidr(
         protocol="tcp",
@@ -80,7 +82,7 @@ def main():
 
     print("CREATE EC2-INSTANCE...")
     instance = Instance(
-        name="LAM Server",
+        name="level_1_lam_server",
         image_id="ami-0f9d441b5d66d5f31",
         availability_zone="us-west-2a",
         instance_type="t2.micro",
@@ -94,6 +96,8 @@ def main():
     print(vpc.id)
     print(vpc.name)
     print(instance.id)
+    print(json.dumps(instance.info, indent=4, default=datetime_converter))
+    print(instance.public_ip)
 
 
 if __name__ == '__main__':

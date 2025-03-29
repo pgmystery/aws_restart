@@ -1,5 +1,6 @@
 import json
 import urllib
+from datetime import datetime
 
 
 def get_public_ip():
@@ -15,3 +16,9 @@ def get_public_ip():
     except urllib.error.URLError as e:
         print(f"Error: {e}")
         return None
+
+
+def datetime_converter(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()  # Convert datetime to ISO format string
+    raise TypeError(f"Type {type(obj)} not serializable")
