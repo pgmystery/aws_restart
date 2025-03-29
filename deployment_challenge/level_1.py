@@ -31,13 +31,13 @@ def main():
     print("CREATE VPC...")
     vpc = VPC(
         name="level_1_vpc",
-        cidr="10.0.0.0/16",
+        cidr="10.0.0.0/28",
     )
 
     print("CREATE SUBNET...")
     subnet = vpc.create_subnet(
         name="Public Subnet 1",
-        cidr="10.0.0.0/24",
+        cidr="10.0.0.0/28",
         availability_zone="us-west-2a",
     )
 
