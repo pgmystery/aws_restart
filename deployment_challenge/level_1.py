@@ -2,31 +2,8 @@ import json
 
 from components.VPC import VPC
 from components.Instance import Instance
+from user_data_scripts import user_data_lam
 from utils import get_public_ip, datetime_converter
-
-
-user_data_script = """#!/bin/bash
-
-# Update the system packages
-sudo yum update -y
-
-# Install httpd and mariadb (MySQL) server
-sudo yum install -y httpd mariadb105-server
-
-# Start the httpd service
-sudo systemctl start httpd
-
-# Start the mariadb service
-sudo systemctl start mariadb
-
-# Enable the services to start on boot
-sudo systemctl enable httpd
-sudo systemctl enable mariadb
-
-# Set basic permissions for /var/www directory
-sudo chown -R apache:apache /var/www
-sudo chmod -R 0770 /var/www
-"""
 
 
 def main():
@@ -90,7 +67,7 @@ def main():
         subnet=subnet,
         security_groups=[security_group_http, security_group_ssh],
         associate_public_ip_address=True,
-        user_data=user_data_script
+        user_data=user_data_lam
     )
 
     print(vpc.id)

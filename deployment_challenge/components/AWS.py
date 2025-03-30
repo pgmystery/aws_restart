@@ -46,3 +46,16 @@ class EC2(AWSComponent):
             aws_secret_access_key=self.credentials.secret_key,
             aws_session_token=self.credentials.session_token,
         )
+
+
+class RDS(AWSComponent):
+    def __init__(self, dot_env_file_path: str = ".env"):
+        super().__init__(dot_env_file_path)
+
+        self.client = boto3.client(
+            'rds',
+            region_name=self.credentials.region,
+            aws_access_key_id=self.credentials.access_key,
+            aws_secret_access_key=self.credentials.secret_key,
+            aws_session_token=self.credentials.session_token,
+        )

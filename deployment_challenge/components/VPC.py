@@ -37,6 +37,10 @@ class VPC(EC2):
             ],
         )["Vpc"]
         self.id: str = self.info["VpcId"]
+        self.client.modify_vpc_attribute(
+            VpcId=self.id,
+            EnableDnsHostnames={'Value': True}
+        )
 
     def delete(self):
         return self.client.delete_vpc(
@@ -62,14 +66,21 @@ class VPC(EC2):
 
         return internet_gateway
 
-    def create_route_table(self, name: str, associate_subnet: Subnet = None, **kwargs) -> RouteTable:
+    def create_route_table(self, name: str, associate_subnet: Union[Subnet, list[Subnet]] = None, **kwargs) -> RouteTable:
         route_table = RouteTable(name, self, **kwargs)
         self.route_tables.append(route_table)
 
         if associate_subnet is not None:
-            route_table.associate_subnet(associate_subnet)
+            if type(associate_subnet) is not list:
+                associate_subnet = [associate_subnet]
+
+            for subnet in associate_subnet:
+                route_table.associate_subnet(subnet)
 
         return route_table
 
     def create_security_group(self, name: str, description: str, **kwargs) -> SecurityGroup:
         return SecurityGroup(name, description, self, **kwargs)
+
+    def create_public_network(self):
+        pass

@@ -1,35 +1,11 @@
-import subprocess
+from deployment_challenge.utils import create_ssh_tunnel
+from user_data_scripts import user_data_lam
 from utils import get_public_ip
-from pathlib import Path
 
 from components.VPC import VPC
 from components.Instance import Instance
 from components.ElasticIp import ElasticIp
 from components.NAT import NAT
-
-
-user_data_script = """#!/bin/bash
-
-# Update the system packages
-sudo yum update -y
-
-# Install httpd and mariadb (MySQL) server
-sudo yum install -y httpd mariadb105-server
-
-# Start the httpd service
-sudo systemctl start httpd
-
-# Start the mariadb service
-sudo systemctl start mariadb
-
-# Enable the services to start on boot
-sudo systemctl enable httpd
-sudo systemctl enable mariadb
-
-# Set basic permissions for /var/www directory
-sudo chown -R apache:apache /var/www
-sudo chmod -R 0770 /var/www
-"""
 
 
 def main():
@@ -140,48 +116,16 @@ def main():
         subnet=private_subnet,
         security_groups=[lam_security_group],
         associate_public_ip_address=False,
-        user_data=user_data_script,
+        user_data=user_data_lam,
         availability_zone="us-west-2a",
     )
 
-    print("SSH TUNNEL TO THE WEBSERVER OVER HTTP")
-    while True:
-        pem_file_location = input("Enter the PEM file location [./labsuser.pem]: ")
-        if pem_file_location == "":
-            pem_file_location = "./labsuser.pem"
-
-        pem_file_location = Path(pem_file_location)
-
-        if pem_file_location.is_file():
-            break
-        else:
-            print(f"The PEM file location doesn't exist. ({str(pem_file_location.resolve())})")
-
-    ssh_tunnel_command = [
-        "ssh",
-        "-oStrictHostKeyChecking=no",
-        "-i", pem_file_location.resolve(),
-        "-N", "-L", f"localhost:8080:{lam_instance.private_ip}:80",
-        f"ec2-user@{bastion_instance.public_ip}"
-    ]
-    # I can't use .join :(
-    ssh_tunnel_command_string = ""
-    for word in ssh_tunnel_command:
-        ssh_tunnel_command_string += str(word) + " "
-    ssh_tunnel_command_string = ssh_tunnel_command_string.strip()
-    print(f'RUN COMMAND: "{ssh_tunnel_command_string}"')
-
-    # Run the command in the background using subprocess.Popen
-    process = subprocess.Popen(ssh_tunnel_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
-    print("You can now access the private Web-Server Webpage")
-    print(f"URL: http://localhost:8080")
-    input("Press enter to exit...")
-
-    try:
-        process.terminate()
-    except:
-        process.kill()
+    create_ssh_tunnel(
+        local_port=8080,
+        remote_port=80,
+        remote_server_ip=lam_instance.private_ip,
+        ssh_server_ip=bastion_instance.public_ip,
+    )
 
     print("DONE!")
 
