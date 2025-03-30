@@ -1,27 +1,11 @@
-from threading import Thread
-
 from components.VPC import VPC
-from components.NAT import NAT
+from components.NAT import NAT, NATBase
 from components.ElasticIp import ElasticIp
 from components.Database import Database, DatabaseEngine
 from components.SubnetGroup import SubnetGroup
 from components.Instance import Instance
-from components.Subnet import Subnet
 from user_data_scripts import user_data_lap
 from utils import get_public_ip, create_ssh_tunnel
-
-
-def create_nat_gateway(
-    name: str,
-    subnet: Subnet,
-    allocation: ElasticIp,
-    result_dict: dict[str, NAT],
-):
-    result_dict[name] = NAT(
-        name=name,
-        subnet=subnet,
-        allocation=allocation,
-    )
 
 
 def main():
@@ -67,34 +51,22 @@ def main():
     )
 
     print("CREATE NATS... (This takes a few minutes)...")
-
-    nats = {}
-    t1 = Thread(
-        target=create_nat_gateway,
-        kwargs={
-            "name": "level_3_nat_1",
-            "subnet": public_subnet_1,
-            "allocation": elastic_ip_1,
-            "result_dict": nats,
-        }
-    )
-    t2 = Thread(
-        target=create_nat_gateway,
-        kwargs={
-            "name": "level_3_nat_2",
-            "subnet": public_subnet_2,
-            "allocation": elastic_ip_2,
-            "result_dict": nats,
-        }
-    )
-    t1.start()
-    t2.start()
-    t1.join()
-    t2.join()
+    nats = NAT.CreateMultiple([
+        NATBase(
+            name="level_3_nat_1",
+            subnet=public_subnet_1,
+            allocation=elastic_ip_1,
+        ),
+        NATBase(
+            name="level_3_nat_2",
+            subnet=public_subnet_2,
+            allocation=elastic_ip_2,
+        ),
+    ])
     nat_1 = nats["level_3_nat_1"]
     nat_2 = nats["level_3_nat_2"]
 
-    print("CREATE PUBLIC ROUTE-TABLES...")
+    print("CREATE ROUTE-TABLES...")
     route_table_public = vpc.create_route_table(
         name="level_3_route_table_public",
         associate_subnet=[
@@ -179,6 +151,7 @@ def main():
             security_group_db,
         ],
         subnet_group=subnet_group,
+        StorageEncrypted=True,
     )
 
     print("CREATE 2 BASTION-HOST INSTANCES...")

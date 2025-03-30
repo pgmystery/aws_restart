@@ -48,6 +48,7 @@ class Database(RDS):
         db_instance_class: str = "db.t3.micro",
         multi_az: bool = False,
         storage_type: str = "gp2",
+        **kwargs,
     ):
         super().__init__()
 
@@ -72,6 +73,7 @@ class Database(RDS):
                         'Value': name
                     }
                 ],
+            **kwargs,
         )["DBInstance"]
 
         waiter = self.client.get_waiter('db_instance_available')

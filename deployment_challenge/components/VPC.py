@@ -81,6 +81,3 @@ class VPC(EC2):
 
     def create_security_group(self, name: str, description: str, **kwargs) -> SecurityGroup:
         return SecurityGroup(name, description, self, **kwargs)
-
-    def create_public_network(self):
-        pass
